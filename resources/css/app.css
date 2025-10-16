@@ -1,0 +1,78 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Custom DataTables Styling */
+.dataTables_wrapper {
+    font-family: 'Inter', sans-serif;
+}
+
+.dataTables_wrapper .dataTables_length select {
+    @apply px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    @apply px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 ml-2;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    @apply px-3 py-1 mx-1 border border-gray-300 rounded hover:bg-blue-50;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    @apply bg-blue-600 text-white border-blue-600;
+}
+
+.dataTables_wrapper .dataTables_info {
+    @apply text-sm text-gray-600 pt-3;
+}
+
+table.dataTable thead th {
+    @apply font-semibold;
+}
+
+table.dataTable tbody td {
+    @apply py-3 px-4;
+}
+
+table.dataTable tbody tr:hover {
+    @apply bg-blue-50;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-blue-400 rounded hover:bg-blue-500;
+}
+
+/* Modal Animation */
+#teacherModal, #studentModal, #categoryModal, #inventoryModal {
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Card Hover Effect */
+.card-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
