@@ -18,6 +18,9 @@ class Admin extends Model
         'username',
         'name',
         'email',
+        'password',
+        'role',
+        'status',
         'active_at',
     ];
 
@@ -29,4 +32,21 @@ class Admin extends Model
     protected $casts = [
         'active_at' => 'datetime',
     ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+    ];
+
+    /**
+     * Hash the password before saving.
+     */
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = bcrypt($value);
+    }
 }

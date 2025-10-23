@@ -24,7 +24,7 @@ class AdminRequest extends FormRequest
     {
         $adminId = $this->route('admin') ? $this->route('admin')->id : null;
         
-        return [
+        $rules = [
             'username' => [
                 'required',
                 'string',
@@ -38,7 +38,18 @@ class AdminRequest extends FormRequest
                 'max:255',
                 Rule::unique('admins', 'email')->ignore($adminId)
             ],
+            'role' => 'required|string|in:admin,super_admin,moderator',
+            'status' => 'required|string|in:active,inactive,pending',
         ];
+
+        // Only require password for create, not update
+        if ($this->isMethod('post')) {
+            $rules['password'] = 'required|string|min:8|confirmed';
+        } elseif ($this->filled('password')) {
+            $rules['password'] = 'string|min:8|confirmed';
+        }
+
+        return $rules;
     }
 
     /**
@@ -53,6 +64,13 @@ class AdminRequest extends FormRequest
             'email.required' => 'Email address is required.',
             'email.email' => 'Please enter a valid email address.',
             'email.unique' => 'This email address is already registered.',
+            'password.required' => 'Password is required.',
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.confirmed' => 'Password confirmation does not match.',
+            'role.required' => 'Role is required.',
+            'role.in' => 'Please select a valid role.',
+            'status.required' => 'Status is required.',
+            'status.in' => 'Please select a valid status.',
         ];
     }
 }

@@ -30,10 +30,10 @@
         </div>
     @endif
 
-    <!-- Desktop Table View -->
-    <div class="hidden lg:block bg-white rounded-xl shadow-lg overflow-hidden">
+    <!-- DataTables Table View -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
+            <table id="adminsTable" class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gradient-to-r from-ocean-50 to-ocean-100">
                     <tr>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-ocean-700 uppercase tracking-wider">
@@ -46,6 +46,12 @@
                             Email
                         </th>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-ocean-700 uppercase tracking-wider">
+                            Role
+                        </th>
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-ocean-700 uppercase tracking-wider">
+                            Status
+                        </th>
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-ocean-700 uppercase tracking-wider">
                             Active Since
                         </th>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-ocean-700 uppercase tracking-wider">
@@ -54,7 +60,7 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($admins as $admin)
+                    @foreach($admins as $admin)
                         <tr class="hover:bg-ocean-50 transition duration-150">
                             <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
@@ -74,6 +80,24 @@
                             </td>
                             <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">{{ $admin->email }}</div>
+                            </td>
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    @if($admin->role === 'super_admin') bg-purple-100 text-purple-800
+                                    @elseif($admin->role === 'admin') bg-blue-100 text-blue-800
+                                    @else bg-green-100 text-green-800
+                                    @endif">
+                                    {{ ucfirst(str_replace('_', ' ', $admin->role)) }}
+                                </span>
+                            </td>
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    @if($admin->status === 'active') bg-green-100 text-green-800
+                                    @elseif($admin->status === 'inactive') bg-red-100 text-red-800
+                                    @else bg-yellow-100 text-yellow-800
+                                    @endif">
+                                    {{ ucfirst($admin->status) }}
+                                </span>
                             </td>
                             <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">
@@ -122,29 +146,10 @@
                                 </div>
                             </td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="px-4 sm:px-6 py-12 text-center">
-                                <div class="text-gray-500">
-                                    <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
-                                    </svg>
-                                    <p class="text-lg font-medium">No admins found</p>
-                                    <p class="text-sm">Get started by creating a new admin account.</p>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
-        
-        <!-- Pagination -->
-        @if($admins->hasPages())
-            <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-                {{ $admins->links() }}
-            </div>
-        @endif
     </div>
 
     <!-- Mobile Card View -->
@@ -229,13 +234,44 @@
                 </div>
             </div>
         @endforelse
-        
-        <!-- Mobile Pagination -->
-        @if($admins->hasPages())
-            <div class="bg-white rounded-xl shadow-lg p-4">
-                {{ $admins->links() }}
-            </div>
-        @endif
     </div>
 </div>
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    $('#adminsTable').DataTable({
+        responsive: true,
+        pageLength: 10,
+        lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+        order: [[0, 'asc']],
+        columnDefs: [
+            { orderable: false, targets: [6] } // Disable sorting on Actions column
+        ],
+        language: {
+            search: "Search admins:",
+            lengthMenu: "Show _MENU_ admins per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ admins",
+            infoEmpty: "No admins available",
+            infoFiltered: "(filtered from _MAX_ total admins)",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            },
+            emptyTable: "No admins found"
+        },
+        dom: '<"flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4"<"mb-2 sm:mb-0"l><"mb-2 sm:mb-0"f>>rt<"flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4"<"mb-2 sm:mb-0"i><"mb-2 sm:mb-0"p>>',
+        initComplete: function() {
+            // Add custom styling to search box
+            $('.dataTables_filter input').addClass('px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500');
+            
+            // Add custom styling to length select
+            $('.dataTables_length select').addClass('px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500');
+        }
+    });
+});
+</script>
+@endpush
 @endsection

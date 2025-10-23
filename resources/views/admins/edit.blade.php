@@ -5,10 +5,10 @@
 @section('content')
 <div class="max-w-2xl mx-auto">
     <!-- Header Section -->
-    <div class="bg-gradient-to-r from-ocean-600 to-ocean-500 rounded-xl shadow-lg p-6 text-white mb-6">
+    <div class="bg-gradient-to-r from-ocean-600 to-ocean-500 rounded-xl shadow-lg p-6 text-dark mb-6">
         <div class="flex items-center">
             <div class="flex-shrink-0">
-                <div class="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-lg">
+                <div class="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center text-dark font-bold text-lg">
                     {{ substr($admin->name, 0, 1) }}
                 </div>
             </div>

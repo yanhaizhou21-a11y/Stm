@@ -13,7 +13,7 @@ class AdminController extends Controller
      */
     public function index()
     {
-        $admins = Admin::orderBy('created_at', 'desc')->paginate(10);
+        $admins = Admin::orderBy('created_at', 'desc')->get();
         return view('admins.index', compact('admins'));
     }
 
@@ -31,7 +31,11 @@ class AdminController extends Controller
     public function store(AdminRequest $request)
     {
         $validated = $request->validated();
-        $validated['active_at'] = now();
+        
+        // Set active_at if status is active
+        if ($validated['status'] === 'active') {
+            $validated['active_at'] = now();
+        }
 
         Admin::create($validated);
 
@@ -61,6 +65,19 @@ class AdminController extends Controller
     public function update(AdminRequest $request, Admin $admin)
     {
         $validated = $request->validated();
+        
+        // Remove password from update if not provided
+        if (empty($validated['password'])) {
+            unset($validated['password']);
+        }
+        
+        // Set active_at if status is active
+        if ($validated['status'] === 'active' && $admin->status !== 'active') {
+            $validated['active_at'] = now();
+        } elseif ($validated['status'] !== 'active') {
+            $validated['active_at'] = null;
+        }
+
         $admin->update($validated);
 
         return redirect()->route('admins.index')

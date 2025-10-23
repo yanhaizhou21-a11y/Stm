@@ -27,5 +27,8 @@ class DatabaseSeeder extends Seeder
         Student::factory(5)->create();
         Category::factory(3)->create();
         Inventory::factory(5)->create();
+        
+        // Seed admin data
+        $this->call(AdminSeeder::class);
     }
 }

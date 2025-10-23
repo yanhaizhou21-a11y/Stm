@@ -13,35 +13,19 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        $admins = [
-            [
-                'username' => 'admin',
-                'name' => 'System Administrator',
-                'email' => 'admin@schoolms.com',
-                'active_at' => now(),
-            ],
-            [
-                'username' => 'john_doe',
-                'name' => 'John Doe',
-                'email' => 'john.doe@schoolms.com',
-                'active_at' => now()->subDays(30),
-            ],
-            [
-                'username' => 'jane_smith',
-                'name' => 'Jane Smith',
-                'email' => 'jane.smith@schoolms.com',
-                'active_at' => now()->subDays(15),
-            ],
-            [
-                'username' => 'mike_wilson',
-                'name' => 'Mike Wilson',
-                'email' => 'mike.wilson@schoolms.com',
-                'active_at' => now()->subDays(7),
-            ],
-        ];
+        // Create a default admin
+        Admin::create([
+            'username' => 'admin',
+            'name' => 'System Administrator',
+            'email' => 'admin@schoolms.com',
+            'password' => 'password', // Will be hashed by the model mutator
+            'role' => 'super_admin',
+            'status' => 'active',
+            'active_at' => now(),
+        ]);
 
-        foreach ($admins as $admin) {
-            Admin::create($admin);
-        }
+        // Create additional admins using factory
+        Admin::factory(3)->active()->create();
+        Admin::factory(2)->inactive()->create();
     }
 }

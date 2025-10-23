@@ -86,6 +86,42 @@
                         </div>
                     </div>
 
+                    <!-- Role -->
+                    <div class="flex flex-col sm:flex-row sm:items-center">
+                        <div class="sm:w-1/3 mb-2 sm:mb-0">
+                            <label class="text-sm font-medium text-gray-500">Role</label>
+                        </div>
+                        <div class="sm:w-2/3">
+                            <div class="bg-ocean-50 px-4 py-3 rounded-lg">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    @if($admin->role === 'super_admin') bg-purple-100 text-purple-800
+                                    @elseif($admin->role === 'admin') bg-blue-100 text-blue-800
+                                    @else bg-green-100 text-green-800
+                                    @endif">
+                                    {{ ucfirst(str_replace('_', ' ', $admin->role)) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="flex flex-col sm:flex-row sm:items-center">
+                        <div class="sm:w-1/3 mb-2 sm:mb-0">
+                            <label class="text-sm font-medium text-gray-500">Status</label>
+                        </div>
+                        <div class="sm:w-2/3">
+                            <div class="bg-ocean-50 px-4 py-3 rounded-lg">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    @if($admin->status === 'active') bg-green-100 text-green-800
+                                    @elseif($admin->status === 'inactive') bg-red-100 text-red-800
+                                    @else bg-yellow-100 text-yellow-800
+                                    @endif">
+                                    {{ ucfirst($admin->status) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Active Since -->
                     <div class="flex flex-col sm:flex-row sm:items-center">
                         <div class="sm:w-1/3 mb-2 sm:mb-0">
@@ -176,10 +212,14 @@
                 <h3 class="text-lg font-bold text-gray-900 mb-4">Account Status</h3>
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <div class="h-3 w-3 rounded-full bg-green-400"></div>
+                        <div class="h-3 w-3 rounded-full 
+                            @if($admin->status === 'active') bg-green-400
+                            @elseif($admin->status === 'inactive') bg-red-400
+                            @else bg-yellow-400
+                            @endif"></div>
                     </div>
                     <div class="ml-3">
-                        <p class="text-sm font-medium text-gray-900">Active</p>
+                        <p class="text-sm font-medium text-gray-900">{{ ucfirst($admin->status) }}</p>
                         <p class="text-xs text-gray-500">
                             {{ $admin->active_at ? 'Since ' . $admin->active_at->format('M d, Y') : 'Status not set' }}
                         </p>
