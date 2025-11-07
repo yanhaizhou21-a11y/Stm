@@ -79,6 +79,15 @@
                             <span class="ml-3">Admins</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('peminjaman.index') }}" class="flex items-center p-3 text-white rounded-lg hover:bg-blue-500/50 transition {{ request()->routeIs('peminjaman.*') ? 'bg-blue-700' : '' }}">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6z" />
+                                <path d="M8 12h4M8 9h4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <span class="ml-3">Peminjaman</span>
+                        </a>
+                    </li>
                     <li class="pt-4 mt-4 border-t border-blue-400">
                         <a href="{{ route('profile.show') }}" class="flex items-center p-3 text-white rounded-lg hover:bg-blue-500/50 transition {{ request()->routeIs('profile.*') ? 'bg-blue-700' : '' }}">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

@@ -8,6 +8,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PeminjamanController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -43,6 +44,7 @@ Route::middleware('auth')->group(function () {
     // Inventories
     Route::get('/inventories', [InventoryController::class, 'index'])->name('inventories.index');
     Route::get('/inventories/data', [InventoryController::class, 'getData'])->name('inventories.data');
+    Route::get('/inventories/check', [InventoryController::class, 'check'])->name('inventories.check');
     Route::post('/inventories', [InventoryController::class, 'store'])->name('inventories.store');
     Route::get('/inventories/{id}', [InventoryController::class, 'show'])->name('inventories.show');
     Route::put('/inventories/{id}', [InventoryController::class, 'update'])->name('inventories.update');
@@ -62,6 +64,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Peminjaman
+    Route::get('peminjaman/data', [PeminjamanController::class, 'data'])->name('peminjaman.data');
+    Route::resource('peminjaman', PeminjamanController::class)->except(['show']);
 });
 
 require __DIR__.'/auth.php';

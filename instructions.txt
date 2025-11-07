@@ -1,0 +1,10 @@
+1. Jalankan migration terbaru setelah memperbarui modul peminjaman:
+   php artisan migrate
+
+2. Pastikan model Student dan Teacher memiliki kolom nama lengkap untuk ditampilkan pada form peminjaman.
+
+3. Rute utama untuk fitur ini berada di /peminjaman.
+
+4. Styling mengikuti Tailwind utility yang sudah ada di layout utama.
+
+

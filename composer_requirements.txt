@@ -1,0 +1,8 @@
+yajra/laravel-datatables-oracle (optional jika mau datatables-server-side lebih lengkap)
+
+# Example:
+composer require yajra/laravel-datatables-oracle
+
+# QuaggaJS dimuat via CDN di blade; tidak perlu composer.
+
+

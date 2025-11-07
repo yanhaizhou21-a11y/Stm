@@ -122,14 +122,40 @@ class InventoryController extends Controller
         ]);
     }
 
-    public function destroy($id)
+    public function check(Request $request)
     {
-        $inventory = Inventory::findOrFail($id);
-        $inventory->delete();
+        $code = trim((string) $request->query('code', ''));
+
+        if ($code === '') {
+            return response()->json(['error' => 'Kode kosong'], 422);
+        }
+
+        $inventory = Inventory::where('kode_barang', $code)
+            ->orWhere('id', $code)
+            ->first();
+
+        if (! $inventory) {
+            return response()->json(['error' => 'Barang tidak ditemukan'], 404);
+        }
 
         return response()->json([
-            "success" => true,
-            "message" => "Data inventaris berhasil dihapus",
+            'id' => $inventory->id,
+            'nama_barang' => $inventory->nama_barang,
         ]);
+    }
+
+    public function checkBarcode($kode)
+    {
+        $inventory = Inventory::where('kode_barang', $kode)->first();
+
+        if ($inventory) {
+            return response()->json([
+                'found' => true,
+                'nama_barang' => $inventory->nama_barang,
+                'id' => $inventory->id,
+            ]);
+        }
+
+        return response()->json(['found' => false]);
     }
 }
