@@ -67,6 +67,7 @@ Route::middleware('auth')->group(function () {
 
     // Peminjaman
     Route::get('peminjaman/data', [PeminjamanController::class, 'data'])->name('peminjaman.data');
+    Route::get('peminjaman/check-peminjam', [PeminjamanController::class, 'checkPeminjam'])->name('peminjaman.check');
     Route::resource('peminjaman', PeminjamanController::class)->except(['show']);
 });
 

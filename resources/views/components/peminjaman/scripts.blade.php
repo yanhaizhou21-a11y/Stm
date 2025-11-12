@@ -21,35 +21,39 @@ document.addEventListener('DOMContentLoaded', function () {
             responsive: true,
             order: [[4, 'desc']],
             columns: [
-                { data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: false },
                 { data: 'peminjam', name: 'peminjam' },
-                { data: 'role_label', name: 'role_label' },
+                { data: 'nama', name: 'nama' },
                 { data: 'barang', name: 'barang' },
+                { data: 'id_barang', name: 'id_barang' },
                 { data: 'tanggal_pinjam', name: 'tanggal_pinjam' },
                 { data: 'tanggal_kembali', name: 'tanggal_kembali' },
                 { data: 'keterangan', name: 'keterangan' },
-                { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-right' },
+                { data: 'action', name: 'action', orderable: false, searchable: false }
             ],
-            language: {
-                searchPlaceholder: "Cari...",
-                paginate: { previous: "←", next: "→" }
-            }
         });
 
-        // delete via normal form but intercept for confirm and refresh
-        document.addEventListener('submit', function (e) {
-            const form = e.target;
-            if (form.matches('form[data-delete-form]')) {
-                e.preventDefault();
-                if (!confirm('Yakin ingin menghapus data ini?')) return;
-                fetch(form.action, { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }, body: new URLSearchParams(new FormData(form)) })
-                    .then(r => {
-                        if (!r.ok) throw new Error('Gagal menghapus');
-                        dt.ajax.reload(null, false);
-                    })
-                    .catch(err => alert(err.message || 'Terjadi kesalahan'));
+        // Delete function
+        window.deletePeminjaman = function(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+                const url = '{{ url("peminjaman") }}/' + id;
+                fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Data berhasil dihapus');
+                    dt.ajax.reload();
+                })
+                .catch(error => {
+                    alert('Terjadi kesalahan!');
+                    console.error(error);
+                });
             }
-        }, true);
+        };
     }
 
     // Modal open for Create
@@ -251,30 +255,38 @@ document.addEventListener('DOMContentLoaded', function () {
         const btn = document.getElementById(prefix + 'check-peminjam');
         const result = document.getElementById(prefix + 'peminjam-result');
         const select = document.getElementById(prefix + 'peminjam_id');
+        const formEl = (select || input)?.closest('form');
+        const roleSelect = formEl?.querySelector('[data-role-select]');
 
         if (!input || !btn || !select) return;
 
-        btn.addEventListener('click', () => {
-            const id = input.value.trim();
-            if (!id) {
+        btn.addEventListener('click', async () => {
+            const code = input.value.trim();
+            if (!code) {
                 result.textContent = 'Masukkan ID terlebih dahulu.';
                 result.className = 'text-xs text-red-500';
                 return;
             }
-            const option = select.querySelector(`option[value="${CSS.escape(id)}"]`);
-            if (option) {
-                select.value = id;
-                result.textContent = `Ditemukan: ${option.textContent}`;
-                result.className = 'text-xs text-green-600';
-                // trigger change for role filter if needed
-                const formEl = select.closest('form');
-                const roleSelect = formEl?.querySelector('[data-role-select]');
-                if (roleSelect && option.dataset.role) {
-                    roleSelect.value = option.dataset.role;
+            const role = roleSelect?.value || '';
+            if (!role) {
+                result.textContent = 'Pilih jenis peminjam terlebih dahulu.';
+                result.className = 'text-xs text-red-500';
+                return;
+            }
+            try {
+                const res = await fetch(`{{ route('peminjaman.check') }}?role=${encodeURIComponent(role)}&code=${encodeURIComponent(code)}`);
+                const json = await res.json();
+                if (!res.ok || json.error) throw new Error(json.error || 'Gagal memeriksa');
+                // set role and select found peminjam id
+                if (roleSelect) {
+                    roleSelect.value = json.role;
                     roleSelect.dispatchEvent(new Event('change'));
                 }
-            } else {
-                result.textContent = 'Tidak ditemukan.';
+                if (select) select.value = String(json.id);
+                result.textContent = `Ditemukan: ${json.nama}`;
+                result.className = 'text-xs text-green-600';
+            } catch (e) {
+                result.textContent = e.message || 'Tidak ditemukan';
                 result.className = 'text-xs text-red-500';
             }
         });

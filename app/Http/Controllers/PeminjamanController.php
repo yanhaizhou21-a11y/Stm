@@ -40,36 +40,80 @@ class PeminjamanController extends Controller
 
     public function data(): JsonResponse
     {
-        $query = Peminjaman::with(['barang', 'peminjam'])
+        $query = Peminjaman::with(['barang', 'peminjam', 'addedBy'])
             ->latest('tanggal_pinjam');
 
         return DataTables::of($query)
-            ->addIndexColumn()
             ->addColumn('peminjam', function (Peminjaman $row) {
-                return $row->peminjam_nama ?? '-';
-            })
-            ->addColumn('role_label', function (Peminjaman $row) {
                 return $row->role_label;
+            })
+            ->addColumn('nama', function (Peminjaman $row) {
+                return $row->peminjam_nama ?? '-';
             })
             ->addColumn('barang', function (Peminjaman $row) {
                 return $row->barang?->nama_barang ?? '-';
             })
+            ->addColumn('id_barang', function (Peminjaman $row) {
+                return $row->barang_id ?? '-';
+            })
             ->editColumn('tanggal_pinjam', function (Peminjaman $row) {
-                return optional($row->tanggal_pinjam)?->format('d M Y') ?? '-';
+                return optional($row->tanggal_pinjam)?->format('d M Y H:i') ?? '-';
             })
             ->editColumn('tanggal_kembali', function (Peminjaman $row) {
-                return optional($row->tanggal_kembali)?->format('d M Y') ?? '-';
+                return optional($row->tanggal_kembali)?->format('d M Y H:i') ?? '-';
+            })
+            ->addColumn('keterangan', function (Peminjaman $row) {
+                return $row->keterangan ?? '-';
             })
             ->addColumn('action', function (Peminjaman $row) {
-                $editBtn = '<button type="button" class="px-3 py-1.5 text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition" data-edit-button data-id="' . $row->id . '">Edit</button>';
-                $deleteForm = '<form data-delete-form action="' . route('peminjaman.destroy', $row) . '" method="POST" class="inline-block ml-2">'
-                    . csrf_field() . method_field('DELETE') .
-                    '<button type="submit" class="px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition">Hapus</button>' .
-                    '</form>';
-                return $editBtn . $deleteForm;
+                $editBtn = '<button type="button" class="px-3 py-1.5 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition" data-edit-button data-id="' . $row->id . '">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    Edit
+                </button>';
+                $deleteBtn = '<button type="button" onclick="deletePeminjaman(' . $row->id . ')" class="px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition ml-2">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Hapus
+                </button>';
+                return $editBtn . $deleteBtn;
             })
             ->rawColumns(['action'])
             ->toJson();
+    }
+
+    public function checkPeminjam(): JsonResponse
+    {
+        $role = request()->query('role');
+        $code = trim((string) request()->query('code', ''));
+
+        if ($code === '' || !in_array($role, ['student', 'teacher'], true)) {
+            return response()->json(['error' => 'Parameter tidak valid'], 422);
+        }
+
+        if ($role === 'student') {
+            $student = Student::where('nisn', $code)->first();
+            if (! $student) {
+                return response()->json(['error' => 'Siswa tidak ditemukan'], 404);
+            }
+            return response()->json([
+                'id' => $student->id,
+                'nama' => $student->nama_lengkap,
+                'role' => 'student',
+            ]);
+        }
+
+        $teacher = Teacher::where('nip', $code)->first();
+        if (! $teacher) {
+            return response()->json(['error' => 'Guru tidak ditemukan'], 404);
+        }
+        return response()->json([
+            'id' => $teacher->id,
+            'nama' => $teacher->nama_lengkap,
+            'role' => 'teacher',
+        ]);
     }
 
     public function store(StorePeminjamanRequest $request)

@@ -1,20 +1,17 @@
 @props(['items' => collect()])
 
-<div class="overflow-x-auto rounded-2xl border border-blue-100 shadow-lg">
-    <table id="peminjaman-table" class="min-w-full divide-y divide-blue-100">
-        <thead class="bg-gradient-to-r from-blue-50 to-cyan-50">
-            <tr>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">#</th>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Peminjam</th>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Peran</th>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Barang</th>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Tanggal Pinjam</th>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Tanggal Kembali</th>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Keterangan</th>
-                <th scope="col" class="px-4 py-3 text-right text-xs font-semibold text-blue-700 uppercase tracking-wider">Aksi</th>
-            </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-blue-50"></tbody>
-    </table>
-</div>
+<table id="peminjaman-table" class="w-full">
+    <thead>
+        <tr class="bg-gradient-to-r from-blue-50 to-cyan-50">
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Peminjam</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Barang</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">ID Barang</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Tanggal Waktu Pinjam</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Waktu Dikembalikan</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Keterangan</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
+        </tr>
+    </thead>
+</table>
 
