@@ -40,7 +40,7 @@ class PeminjamanController extends Controller
 
     public function data(): JsonResponse
     {
-        $query = Peminjaman::with(['barang', 'peminjam', 'addedBy'])
+        $query = Peminjaman::with(['barang', 'peminjam'])
             ->latest('tanggal_pinjam');
 
         return DataTables::of($query)
@@ -56,11 +56,21 @@ class PeminjamanController extends Controller
             ->addColumn('id_barang', function (Peminjaman $row) {
                 return $row->barang_id ?? '-';
             })
+            ->addColumn('status', function (Peminjaman $row) {
+                $colors = [
+                    'dipinjam' => 'bg-blue-100 text-blue-800',
+                    'dikembalikan' => 'bg-green-100 text-green-800',
+                    'rusak' => 'bg-red-100 text-red-800',
+                    'hilang' => 'bg-gray-100 text-gray-800',
+                ];
+                $color = $colors[$row->status] ?? 'bg-gray-100 text-gray-800';
+                return '<span class="px-2 py-1 text-xs rounded-full ' . $color . '">' . ucfirst($row->status) . '</span>';
+            })
             ->editColumn('tanggal_pinjam', function (Peminjaman $row) {
-                return optional($row->tanggal_pinjam)?->format('d M Y H:i') ?? '-';
+                return optional($row->tanggal_pinjam)?->format('d M Y') ?? '-';
             })
             ->editColumn('tanggal_kembali', function (Peminjaman $row) {
-                return optional($row->tanggal_kembali)?->format('d M Y H:i') ?? '-';
+                return optional($row->tanggal_kembali)?->format('d M Y') ?? '-';
             })
             ->addColumn('keterangan', function (Peminjaman $row) {
                 return $row->keterangan ?? '-';
@@ -80,7 +90,7 @@ class PeminjamanController extends Controller
                 </button>';
                 return $editBtn . $deleteBtn;
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action', 'status'])
             ->toJson();
     }
 
@@ -119,7 +129,8 @@ class PeminjamanController extends Controller
     public function store(StorePeminjamanRequest $request)
     {
         $attributes = $this->mapRequestToAttributes($request->validated());
-        $attributes['added_by'] = Auth::id();
+        $attributes['added_by'] = (string) Auth::id();
+        $attributes['status'] = 'dipinjam';
 
         $created = Peminjaman::create($attributes);
 
@@ -140,8 +151,9 @@ class PeminjamanController extends Controller
                 'peminjam_id' => $peminjaman->peminjam_id,
                 'role' => $this->mapRoleClassToKey($peminjaman->role),
                 'barang_id' => $peminjaman->barang_id,
-                'tanggal_pinjam' => optional($peminjaman->tanggal_pinjam)->format('Y-m-d'),
-                'tanggal_kembali' => optional($peminjaman->tanggal_kembali)->format('Y-m-d'),
+                'tanggal_pinjam' => optional($peminjaman->tanggal_pinjam)?->format('Y-m-d'),
+                'tanggal_kembali' => optional($peminjaman->tanggal_kembali)?->format('Y-m-d'),
+                'status' => $peminjaman->status,
                 'keterangan' => $peminjaman->keterangan,
             ],
         ]);
@@ -183,8 +195,8 @@ class PeminjamanController extends Controller
 
         return [
             'role' => $roleClass,
-            'peminjam_id' => (int) $validated['peminjam_id'],
-            'barang_id' => (int) $validated['barang_id'],
+            'peminjam_id' => (string) $validated['peminjam_id'],
+            'barang_id' => (string) $validated['barang_id'],
             'tanggal_pinjam' => $validated['tanggal_pinjam'],
             'tanggal_kembali' => $validated['tanggal_kembali'] ?? null,
             'keterangan' => $validated['keterangan'] ?? null,

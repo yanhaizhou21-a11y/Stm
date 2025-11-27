@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 { data: 'id_barang', name: 'id_barang' },
                 { data: 'tanggal_pinjam', name: 'tanggal_pinjam' },
                 { data: 'tanggal_kembali', name: 'tanggal_kembali' },
+                { data: 'status', name: 'status', orderable: false },
                 { data: 'keterangan', name: 'keterangan' },
                 { data: 'action', name: 'action', orderable: false, searchable: false }
             ],

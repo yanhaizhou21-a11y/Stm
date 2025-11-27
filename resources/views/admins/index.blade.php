@@ -5,22 +5,18 @@
 @section('content')
 <div class="space-y-6">
     <!-- Header Section -->
-    <div class="bg-gradient-to-r from-ocean-600 to-ocean-500 rounded-xl shadow-lg p-6 text-dark">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <h1 class="text-2xl sm:text-3xl font-bold mb-2">Admin Management</h1>
-                <p class="text-ocean-100">Manage admin accounts and profiles</p>
-            </div>
-            <div class="mt-4 sm:mt-0">
-                <a href="{{ route('admins.create') }}" 
-                   class="inline-flex items-center px-4 py-2 bg-white text-ocean-600 rounded-lg hover:bg-ocean-50 transition duration-200 font-medium">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                    Add New Admin
-                </a>
-            </div>
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-semibold text-slate-900">Admin Management</h1>
+            <p class="text-sm text-slate-600 mt-1">Manage admin accounts and profiles</p>
         </div>
+        <a href="{{ route('admins.create') }}" 
+           class="inline-flex items-center px-4 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-medium shadow-soft">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Add New Admin
+        </a>
     </div>
 
     <!-- Success Message -->
@@ -31,41 +27,41 @@
     @endif
 
     <!-- DataTables Table View -->
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-soft overflow-hidden">
         <div class="overflow-x-auto">
-            <table id="adminsTable" class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gradient-to-r from-ocean-50 to-ocean-100">
+            <table id="adminsTable" class="min-w-full">
+                <thead>
                     <tr>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-ocean-700 uppercase tracking-wider">
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
                             Admin Info
                         </th>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-ocean-700 uppercase tracking-wider">
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
                             Username
                         </th>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-ocean-700 uppercase tracking-wider">
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
                             Email
                         </th>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-ocean-700 uppercase tracking-wider">
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
                             Role
                         </th>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-ocean-700 uppercase tracking-wider">
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
                             Status
                         </th>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-ocean-700 uppercase tracking-wider">
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
                             Active Since
                         </th>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-ocean-700 uppercase tracking-wider">
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
                             Actions
                         </th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($admins as $admin)
-                        <tr class="hover:bg-ocean-50 transition duration-150">
+                        <tr class="hover:bg-slate-50 transition duration-150">
                             <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-10 w-10">
-                                        <div class="h-10 w-10 rounded-full bg-gradient-to-r from-ocean-500 to-ocean-400 flex items-center justify-center text-white font-bold text-sm">
+                                        <div class="h-10 w-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-sm">
                                             {{ substr($admin->name, 0, 1) }}
                                         </div>
                                     </div>
@@ -113,7 +109,7 @@
                                 <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                                     <!-- View Button -->
                                     <a href="{{ route('admins.show', $admin) }}" 
-                                       class="inline-flex items-center px-3 py-1.5 bg-ocean-100 text-ocean-700 rounded-md hover:bg-ocean-200 transition duration-150 text-xs">
+                                       class="inline-flex items-center px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition duration-150 text-xs font-medium">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>

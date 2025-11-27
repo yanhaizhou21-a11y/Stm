@@ -14,6 +14,7 @@ class Peminjaman extends Model
     protected $table = 'peminjaman';
 
     protected $fillable = [
+        'id',
         'peminjam_id',
         'role',
         'barang_id',
@@ -21,11 +22,16 @@ class Peminjaman extends Model
         'tanggal_kembali',
         'keterangan',
         'added_by',
+        'status',
     ];
 
     protected $casts = [
-        'tanggal_pinjam' => 'datetime',
-        'tanggal_kembali' => 'datetime',
+        'tanggal_pinjam' => 'date',
+        'tanggal_kembali' => 'date',
+    ];
+
+    protected $attributes = [
+        'status' => 'dipinjam',
     ];
 
     public function peminjam(): MorphTo
@@ -38,20 +44,26 @@ class Peminjaman extends Model
         return $this->belongsTo(Inventory::class, 'barang_id');
     }
 
-    public function addedBy(): BelongsTo
+    public function pengembalian()
     {
-        return $this->belongsTo(User::class, 'added_by');
+        return $this->hasOne(Pengembalian::class, 'peminjaman_id');
     }
 
     public function getPeminjamNamaAttribute(): ?string
     {
-        $peminjam = $this->peminjam;
-
-        return $peminjam?->nama_lengkap ?? $peminjam?->name ?? null;
+        try {
+            $peminjam = $this->peminjam;
+            return $peminjam?->nama_lengkap ?? $peminjam?->name ?? null;
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     public function getRoleLabelAttribute(): string
     {
-        return ucfirst(strtolower(class_basename($this->role)));
+        if (class_exists($this->role)) {
+            return ucfirst(strtolower(class_basename($this->role)));
+        }
+        return ucfirst($this->role ?? '');
     }
 }

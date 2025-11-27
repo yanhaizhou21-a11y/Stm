@@ -14,22 +14,11 @@ export default {
             fontFamily: {
                 sans: ['Inter', 'Poppins', ...defaultTheme.fontFamily.sans],
             },
-            colors: {
-                ocean: {
-                    50: '#CAF0F8',
-                    100: '#ADE8F4',
-                    200: '#90E0EF',
-                    300: '#48CAE4',
-                    400: '#00B4D8',
-                    500: '#0096C7',
-                    600: '#0077B6',
-                    700: '#023E8A',
-                    800: '#03045E',
-                },
-            },
-            backgroundImage: {
-                'gradient-ocean': 'linear-gradient(135deg, #0077B6 0%, #00B4D8 50%, #90E0EF 100%)',
-                'gradient-ocean-dark': 'linear-gradient(135deg, #023E8A 0%, #0077B6 100%)',
+            boxShadow: {
+                'soft': '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03)',
+                'soft-md': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+                'soft-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03)',
+                'soft-xl': '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02)',
             },
         },
     },

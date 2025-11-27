@@ -30,5 +30,8 @@ class DatabaseSeeder extends Seeder
         
         // Seed admin data
         $this->call(AdminSeeder::class);
+        
+        // Seed peminjaman data
+        $this->call(PeminjamanSeeder::class);
     }
 }

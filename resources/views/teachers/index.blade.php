@@ -3,96 +3,120 @@
 @section('header', 'Teachers Management')
 
 @section('content')
-<div class="bg-white rounded-2xl shadow-lg p-6">
-    <div class="flex justify-between items-center mb-6">
-        <h3 class="text-xl font-bold text-gray-800">Data Guru</h3>
-        <button onclick="openCreateModal()" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 transition shadow-md">
-            + Tambah Guru
-        </button>
-    </div>
+<x-page-header>
+    <x-slot name="header">Teachers Management</x-slot>
+    <x-slot name="description">Manage teachers information and profiles</x-slot>
+    <x-slot name="action">
+        <x-btn variant="primary" onclick="openCreateModal()">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Add Teacher
+        </x-btn>
+    </x-slot>
 
     <div class="overflow-x-auto">
         <table id="teachersTable" class="w-full">
             <thead>
-                <tr class="bg-gradient-to-r from-blue-50 to-cyan-50">
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">NIP</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Nama Lengkap</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Jabatan</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">No HP</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
+                <tr>
+                    <th>NIP</th>
+                    <th>Full Name</th>
+                    <th>Position</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
         </table>
     </div>
-</div>
+</x-page-header>
 
-<!-- Modal Form -->
-<div id="teacherModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-4 rounded-t-2xl">
-            <h3 id="modalTitle" class="text-xl font-bold text-white">Tambah Guru</h3>
-        </div>
-        <form id="teacherForm" class="p-6 space-y-4">
-            <input type="hidden" id="teacherId">
+<!-- Create/Edit Modal -->
+<x-form-modal modal-id="teacherModal" title="Add Teacher">
+    <form id="teacherForm" class="space-y-4">
+        <input type="hidden" id="teacherId">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <x-form.input 
+                label="NIP" 
+                name="nip" 
+                id="nip"
+                required 
+                placeholder="Enter NIP"
+            />
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">NIP</label>
-                    <input type="text" id="nip" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
-                    <input type="text" id="nama_lengkap" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                </div>
-            </div>
+            <x-form.input 
+                label="Full Name" 
+                name="nama_lengkap" 
+                id="nama_lengkap"
+                required 
+                placeholder="Enter full name"
+            />
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Jabatan</label>
-                    <input type="text" id="jabatan" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">No HP</label>
-                    <input type="text" id="no_hp" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                </div>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <x-form.input 
+                label="Position" 
+                name="jabatan" 
+                id="jabatan"
+                required 
+                placeholder="Enter position"
+            />
+            
+            <x-form.input 
+                label="Phone Number" 
+                name="no_hp" 
+                id="no_hp"
+                type="tel"
+                required 
+                placeholder="Enter phone number"
+            />
+        </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                <input type="email" id="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
+        <x-form.input 
+            label="Email" 
+            name="email" 
+            id="email"
+            type="email"
+            required 
+            placeholder="Enter email address"
+        />
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
-                <textarea id="alamat" rows="3" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
-            </div>
+        <x-form.textarea 
+            label="Address" 
+            name="alamat" 
+            id="alamat"
+            required 
+            placeholder="Enter address"
+            rows="3"
+        />
 
-            <div class="flex items-center">
-                <input type="checkbox" id="is_active" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                <label for="is_active" class="ml-2 text-sm font-medium text-gray-700">Status Aktif</label>
-            </div>
+        <x-form.checkbox 
+            label="Active Status" 
+            name="is_active" 
+            id="is_active"
+            checked
+        />
 
-            <div class="flex justify-end space-x-3 pt-4 border-t">
-                <button type="button" onclick="closeModal()" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
-                    Batal
-                </button>
-                <button type="submit" class="px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 transition shadow-md">
-                    Simpan
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+        <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
+            <x-btn variant="secondary" type="button" onclick="closeModal('teacherModal')">
+                Cancel
+            </x-btn>
+            <x-btn variant="primary" type="submit">
+                Save
+            </x-btn>
+        </div>
+    </form>
+</x-form-modal>
 @endsection
 
 @push('scripts')
 <script>
-let table;
+let teacherTable;
 
 $(document).ready(function() {
-    table = $('#teachersTable').DataTable({
+    teacherTable = $('#teachersTable').DataTable({
         processing: true,
         serverSide: true,
         ajax: '{{ route("teachers.data") }}',
@@ -109,52 +133,54 @@ $(document).ready(function() {
 });
 
 function openCreateModal() {
-    document.getElementById('modalTitle').innerText = 'Tambah Guru';
     document.getElementById('teacherForm').reset();
     document.getElementById('teacherId').value = '';
     document.getElementById('is_active').checked = true;
-    document.getElementById('teacherModal').classList.remove('hidden');
+    document.querySelector('#teacherModal h3').textContent = 'Add Teacher';
+    window.openModal('teacherModal');
 }
 
-function closeModal() {
-    document.getElementById('teacherModal').classList.add('hidden');
-}
+window.editTeacher = async function(id) {
+    try {
+        const response = await fetch(`/teachers/${id}`);
+        const data = await response.json();
+        
+        document.getElementById('teacherId').value = data.id;
+        document.getElementById('nip').value = data.nip;
+        document.getElementById('nama_lengkap').value = data.nama_lengkap;
+        document.getElementById('jabatan').value = data.jabatan;
+        document.getElementById('no_hp').value = data.no_hp;
+        document.getElementById('email').value = data.email;
+        document.getElementById('alamat').value = data.alamat;
+        document.getElementById('is_active').checked = data.is_active;
+        
+        document.querySelector('#teacherModal h3').textContent = 'Edit Teacher';
+        window.openModal('teacherModal');
+    } catch (error) {
+        window.toast.error('Failed to load teacher data');
+    }
+};
 
-function editTeacher(id) {
-    fetch(`/teachers/${id}`)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('modalTitle').innerText = 'Edit Guru';
-            document.getElementById('teacherId').value = data.id;
-            document.getElementById('nip').value = data.nip;
-            document.getElementById('nama_lengkap').value = data.nama_lengkap;
-            document.getElementById('jabatan').value = data.jabatan;
-            document.getElementById('no_hp').value = data.no_hp;
-            document.getElementById('email').value = data.email;
-            document.getElementById('alamat').value = data.alamat;
-            document.getElementById('is_active').checked = data.is_active;
-            document.getElementById('teacherModal').classList.remove('hidden');
-        });
-}
+window.deleteTeacher = async function(id) {
+    if (!confirm('Are you sure you want to delete this teacher?')) return;
 
-function deleteTeacher(id) {
-    if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-        fetch(`/teachers/${id}`, {
+    try {
+        const response = await fetch(`/teachers/${id}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 'Content-Type': 'application/json'
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);
-            table.ajax.reload();
         });
+        const data = await response.json();
+        window.toast.success(data.message || 'Teacher deleted successfully');
+        teacherTable.ajax.reload();
+    } catch (error) {
+        window.toast.error('Failed to delete teacher');
     }
-}
+};
 
-document.getElementById('teacherForm').addEventListener('submit', function(e) {
+document.getElementById('teacherForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const id = document.getElementById('teacherId').value;
@@ -171,24 +197,23 @@ document.getElementById('teacherForm').addEventListener('submit', function(e) {
         is_active: document.getElementById('is_active').checked ? 1 : 0
     };
     
-    fetch(url, {
-        method: method,
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message);
-        closeModal();
-        table.ajax.reload();
-    })
-    .catch(error => {
-        alert('Terjadi kesalahan!');
-        console.error(error);
-    });
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        
+        window.toast.success(data.message || 'Teacher saved successfully');
+        window.closeModal('teacherModal');
+        teacherTable.ajax.reload();
+    } catch (error) {
+        window.toast.error('Failed to save teacher');
+    }
 });
 </script>
 @endpush

@@ -3,92 +3,72 @@
 @section('header', 'Dashboard')
 
 @section('content')
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-    <!-- Teachers Card -->
-    <div class="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl shadow-lg p-6 text-white transform hover:scale-105 transition">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-blue-100 text-sm font-medium">Total Teachers</p>
-                <h3 class="text-4xl font-bold mt-2">{{ $stats['teachers'] }}</h3>
-                <p class="text-blue-100 text-xs mt-2">Active teachers</p>
+<div class="space-y-6">
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+        @php
+            $metrics = [
+                ['label' => 'Total Teachers', 'value' => $stats['teachers'], 'description' => 'Active teachers', '  icon' => 'M10 9a3 3 0 100-6 3 3 0 000 6zm-6 9a6 6 0 1112 0'],
+                ['label' => 'Total Students', 'value' => $stats['students'], 'description' => 'Active students', 'icon' => 'M6 8a3 3 0 11-6 0 3 3 0 016 0zm8 0a3 3 0 11-6 0 3 3 0 016 0z'],
+                ['label' => 'Inventory Items', 'value' => $stats['inventories'], 'description' => 'Total items', 'icon' => 'M4 6h12l-1 9H5z'],
+                ['label' => 'Categories', 'value' => $stats['categories'], 'description' => 'Item categories', 'icon' => 'M3 5h14v4H3zm0 6h14v4H3z'],
+            ];
+        @endphp
+
+        @foreach ($metrics as $metric)
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-soft hover:shadow-soft-md transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-600">{{ $metric['label'] }}</p>
+                        <p class="mt-2 text-3xl font-semibold text-slate-900">{{ $metric['value'] }}</p>
+                        <p class="text-xs text-slate-500 mt-1">{{ $metric['description'] }}</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100">
+                            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 20 20">
+                                <path d="{{ $metric['icon'] }}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="bg-white/20 p-3 rounded-xl">
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
-                </svg>
-            </div>
-        </div>
+        @endforeach
     </div>
 
-    <!-- Students Card -->
-    <div class="bg-gradient-to-br from-cyan-500 to-blue-400 rounded-2xl shadow-lg p-6 text-white transform hover:scale-105 transition">
-        <div class="flex justify-between items-start">
+    <!-- Welcome Section -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-soft">
+        <div class="space-y-6">
             <div>
-                <p class="text-cyan-100 text-sm font-medium">Total Students</p>
-                <h3 class="text-4xl font-bold mt-2">{{ $stats['students'] }}</h3>
-                <p class="text-cyan-100 text-xs mt-2">Active students</p>
+                <h2 class="text-2xl font-semibold text-slate-900">Welcome to School Management System</h2>
+                <p class="text-slate-600 leading-relaxed mt-2">
+                    Manage teachers, students, inventories, and more through a unified interface. Use the quick links below to jump straight into each module.
+                </p>
             </div>
-            <div class="bg-white/20 p-3 rounded-xl">
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
-                </svg>
+            
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                @foreach ([
+                    ['label' => 'Manage Teachers', 'desc' => 'Add and update teacher data', 'route' => 'teachers.index', 'icon' => 'M10 9a3 3 0 100-6 3 3 0 000 6zm-6 9a6 6 0 1112 0'],
+                    ['label' => 'Manage Students', 'desc' => 'Track student information', 'route' => 'students.index', 'icon' => 'M6 8a3 3 0 11-6 0 3 3 0 016 0zm8 0a3 3 0 11-6 0 3 3 0 016 0z'],
+                    ['label' => 'Inventory Control', 'desc' => 'Monitor school assets', 'route' => 'inventories.index', 'icon' => 'M4 6h12l-1 9H5z M8 6V4a2 2 0 114 0v2'],
+                ] as $link)
+                    <a href="{{ route($link['route']) }}" class="group rounded-2xl border border-slate-200 px-6 py-5 transition-all duration-200 hover:border-indigo-200 hover:bg-indigo-50 hover:shadow-soft-md">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0">
+                                <div class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 group-hover:bg-indigo-100 transition-colors">
+                                    <svg class="w-5 h-5 text-slate-600 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 20 20">
+                                        <path d="{{ $link['icon'] }}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-slate-900">{{ $link['label'] }}</p>
+                                <p class="text-xs text-slate-600 mt-1">{{ $link['desc'] }}</p>
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
             </div>
         </div>
-    </div>
-
-    <!-- Inventory Card -->
-    <div class="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl shadow-lg p-6 text-white transform hover:scale-105 transition">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-blue-100 text-sm font-medium">Inventory Items</p>
-                <h3 class="text-4xl font-bold mt-2">{{ $stats['inventories'] }}</h3>
-                <p class="text-blue-100 text-xs mt-2">Total items</p>
-            </div>
-            <div class="bg-white/20 p-3 rounded-xl">
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
-                </svg>
-            </div>
-        </div>
-    </div>
-
-    <!-- Categories Card -->
-    <div class="bg-gradient-to-br from-cyan-600 to-blue-500 rounded-2xl shadow-lg p-6 text-white transform hover:scale-105 transition">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-cyan-100 text-sm font-medium">Categories</p>
-                <h3 class="text-4xl font-bold mt-2">{{ $stats['categories'] }}</h3>
-                <p class="text-cyan-100 text-xs mt-2">Item categories</p>
-            </div>
-            <div class="bg-white/20 p-3 rounded-xl">
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
-                </svg>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Welcome Section -->
-<div class="bg-white rounded-2xl shadow-lg p-8">
-    <h2 class="text-2xl font-bold text-gray-800 mb-4">Welcome to School Management System</h2>
-    <p class="text-gray-600 leading-relaxed">
-        Manage your school's teachers, students, and inventory efficiently with our modern management system. 
-        Navigate through the sidebar to access different modules and manage your data effectively.
-    </p>
-    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <a href="{{ route('teachers.index') }}" class="p-4 border-2 border-blue-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition">
-            <h3 class="font-semibold text-blue-600">Manage Teachers</h3>
-            <p class="text-sm text-gray-600 mt-1">Add, edit, and manage teacher records</p>
-        </a>
-        <a href="{{ route('students.index') }}" class="p-4 border-2 border-cyan-200 rounded-xl hover:border-cyan-500 hover:bg-cyan-50 transition">
-            <h3 class="font-semibold text-cyan-600">Manage Students</h3>
-            <p class="text-sm text-gray-600 mt-1">Track and manage student information</p>
-        </a>
-        <a href="{{ route('inventories.index') }}" class="p-4 border-2 border-blue-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition">
-            <h3 class="font-semibold text-blue-600">Inventory Control</h3>
-            <p class="text-sm text-gray-600 mt-1">Manage school assets and equipment</p>
-        </a>
     </div>
 </div>
 @endsection

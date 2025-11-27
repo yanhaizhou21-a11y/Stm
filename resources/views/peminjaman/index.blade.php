@@ -3,10 +3,11 @@
 @section('header', 'Manajemen Peminjaman')
 
 @section('content')
-<div class="bg-white rounded-2xl shadow-lg p-6">
-    <div class="flex justify-between items-center mb-6">
+<div class="container mx-auto px-4 py-6 max-w-6xl">
+<div class="rounded-xl bg-white border-2 border-gray-400 shadow-sm p-6 space-y-4">
+    <div class="flex justify-between items-center">
         <h3 class="text-xl font-bold text-gray-800">Data Peminjaman</h3>
-        <button type="button" data-open-create class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 transition shadow-md">
+        <button type="button" data-open-create class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
             + Tambah Peminjaman
         </button>
     </div>
@@ -43,6 +44,8 @@
         field-prefix="edit-"
     />
 </x-peminjaman.modal>
+</div>
+</div>
 @endsection
 
 @include('components.peminjaman.scripts')

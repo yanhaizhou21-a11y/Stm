@@ -9,6 +9,8 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PeminjamanController;
+use App\Http\Controllers\PengembalianController;
+use App\Http\Controllers\LaporanController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -69,6 +71,15 @@ Route::middleware('auth')->group(function () {
     Route::get('peminjaman/data', [PeminjamanController::class, 'data'])->name('peminjaman.data');
     Route::get('peminjaman/check-peminjam', [PeminjamanController::class, 'checkPeminjam'])->name('peminjaman.check');
     Route::resource('peminjaman', PeminjamanController::class)->except(['show']);
+
+    // Pengembalian
+    Route::resource('pengembalian', PengembalianController::class);
+
+    // Laporan
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::post('/laporan/filter', [LaporanController::class, 'filter'])->name('laporan.filter');
+    Route::get('/laporan/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan.excel');
+    Route::get('/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan.pdf');
 });
 
 require __DIR__.'/auth.php';

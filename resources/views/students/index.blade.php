@@ -3,101 +3,127 @@
 @section('header', 'Students Management')
 
 @section('content')
-<div class="bg-white rounded-2xl shadow-lg p-6">
-    <div class="flex justify-between items-center mb-6">
-        <h3 class="text-xl font-bold text-gray-800">Data Siswa</h3>
-        <button onclick="openCreateModal()" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 transition shadow-md">
-            + Tambah Siswa
-        </button>
-    </div>
+<x-page-header>
+    <x-slot name="header">Students Management</x-slot>
+    <x-slot name="description">Manage students information and profiles</x-slot>
+    <x-slot name="action">
+        <x-btn variant="primary" onclick="openCreateModal()">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Add Student
+        </x-btn>
+    </x-slot>
 
     <div class="overflow-x-auto">
         <table id="studentsTable" class="w-full">
             <thead>
-                <tr class="bg-gradient-to-r from-blue-50 to-cyan-50">
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">NISN</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Nama Lengkap</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Kelas</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Jurusan</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Angkatan</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">No HP</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
+                <tr>
+                    <th>NISN</th>
+                    <th>Full Name</th>
+                    <th>Class</th>
+                    <th>Major</th>
+                    <th>Year</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
         </table>
     </div>
-</div>
+</x-page-header>
 
-<!-- Modal Form -->
-<div id="studentModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-4 rounded-t-2xl">
-            <h3 id="modalTitle" class="text-xl font-bold text-white">Tambah Siswa</h3>
-        </div>
-        <form id="studentForm" class="p-6 space-y-4">
-            <input type="hidden" id="studentId">
+<x-form-modal modal-id="studentModal" title="Add Student">
+    <form id="studentForm" class="space-y-4">
+        <input type="hidden" id="studentId">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <x-form.input 
+                label="NISN" 
+                name="nisn" 
+                id="nisn"
+                required 
+                placeholder="Enter NISN"
+            />
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">NISN</label>
-                    <input type="text" id="nisn" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
-                    <input type="text" id="nama_lengkap" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                </div>
-            </div>
+            <x-form.input 
+                label="Full Name" 
+                name="nama_lengkap" 
+                id="nama_lengkap"
+                required 
+                placeholder="Enter full name"
+            />
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Kelas</label>
-                    <input type="text" id="kelas" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Jurusan</label>
-                    <input type="text" id="jurusan" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Angkatan</label>
-                    <input type="text" id="angkatan" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                </div>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <x-form.input 
+                label="Class" 
+                name="kelas" 
+                id="kelas"
+                required 
+                placeholder="e.g., 12"
+            />
+            
+            <x-form.input 
+                label="Major" 
+                name="jurusan" 
+                id="jurusan"
+                required 
+                placeholder="e.g., Science"
+            />
+            
+            <x-form.input 
+                label="Year" 
+                name="angkatan" 
+                id="angkatan"
+                required 
+                placeholder="e.g., 2024"
+            />
+        </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">No HP</label>
-                <input type="text" id="no_hp" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
+        <x-form.input 
+            label="Phone Number" 
+            name="no_hp" 
+            id="no_hp"
+            type="tel"
+            required 
+            placeholder="Enter phone number"
+        />
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
-                <textarea id="alamat" rows="3" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
-            </div>
+        <x-form.textarea 
+            label="Address" 
+            name="alamat" 
+            id="alamat"
+            required 
+            placeholder="Enter address"
+            rows="3"
+        />
 
-            <div class="flex items-center">
-                <input type="checkbox" id="is_active" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                <label for="is_active" class="ml-2 text-sm font-medium text-gray-700">Status Aktif</label>
-            </div>
+        <x-form.checkbox 
+            label="Active Status" 
+            name="is_active" 
+            id="is_active"
+            checked
+        />
 
-            <div class="flex justify-end space-x-3 pt-4 border-t">
-                <button type="button" onclick="closeModal()" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
-                    Batal
-                </button>
-                <button type="submit" class="px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 transition shadow-md">
-                    Simpan
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+        <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
+            <x-btn variant="secondary" type="button" onclick="closeModal('studentModal')">
+                Cancel
+            </x-btn>
+            <x-btn variant="primary" type="submit">
+                Save
+            </x-btn>
+        </div>
+    </form>
+</x-form-modal>
 @endsection
 
 @push('scripts')
 <script>
-let table;
+let studentTable;
 
 $(document).ready(function() {
-    table = $('#studentsTable').DataTable({
+    studentTable = $('#studentsTable').DataTable({
         processing: true,
         serverSide: true,
         ajax: '{{ route("students.data") }}',
@@ -115,53 +141,55 @@ $(document).ready(function() {
 });
 
 function openCreateModal() {
-    document.getElementById('modalTitle').innerText = 'Tambah Siswa';
     document.getElementById('studentForm').reset();
     document.getElementById('studentId').value = '';
     document.getElementById('is_active').checked = true;
-    document.getElementById('studentModal').classList.remove('hidden');
+    document.querySelector('#studentModal h3').textContent = 'Add Student';
+    window.openModal('studentModal');
 }
 
-function closeModal() {
-    document.getElementById('studentModal').classList.add('hidden');
-}
+window.editStudent = async function(id) {
+    try {
+        const response = await fetch(`/students/${id}`);
+        const data = await response.json();
+        
+        document.getElementById('studentId').value = data.id;
+        document.getElementById('nisn').value = data.nisn;
+        document.getElementById('nama_lengkap').value = data.nama_lengkap;
+        document.getElementById('kelas').value = data.kelas;
+        document.getElementById('jurusan').value = data.jurusan;
+        document.getElementById('angkatan').value = data.angkatan;
+        document.getElementById('no_hp').value = data.no_hp;
+        document.getElementById('alamat').value = data.alamat;
+        document.getElementById('is_active').checked = data.is_active;
+        
+        document.querySelector('#studentModal h3').textContent = 'Edit Student';
+        window.openModal('studentModal');
+    } catch (error) {
+        window.toast.error('Failed to load student data');
+    }
+};
 
-function editStudent(id) {
-    fetch(`/students/${id}`)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('modalTitle').innerText = 'Edit Siswa';
-            document.getElementById('studentId').value = data.id;
-            document.getElementById('nisn').value = data.nisn;
-            document.getElementById('nama_lengkap').value = data.nama_lengkap;
-            document.getElementById('kelas').value = data.kelas;
-            document.getElementById('jurusan').value = data.jurusan;
-            document.getElementById('angkatan').value = data.angkatan;
-            document.getElementById('no_hp').value = data.no_hp;
-            document.getElementById('alamat').value = data.alamat;
-            document.getElementById('is_active').checked = data.is_active;
-            document.getElementById('studentModal').classList.remove('hidden');
-        });
-}
+window.deleteStudent = async function(id) {
+    if (!confirm('Are you sure you want to delete this student?')) return;
 
-function deleteStudent(id) {
-    if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-        fetch(`/students/${id}`, {
+    try {
+        const response = await fetch(`/students/${id}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 'Content-Type': 'application/json'
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);
-            table.ajax.reload();
         });
+        const data = await response.json();
+        window.toast.success(data.message || 'Student deleted successfully');
+        studentTable.ajax.reload();
+    } catch (error) {
+        window.toast.error('Failed to delete student');
     }
-}
+};
 
-document.getElementById('studentForm').addEventListener('submit', function(e) {
+document.getElementById('studentForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const id = document.getElementById('studentId').value;
@@ -179,24 +207,23 @@ document.getElementById('studentForm').addEventListener('submit', function(e) {
         is_active: document.getElementById('is_active').checked ? 1 : 0
     };
     
-    fetch(url, {
-        method: method,
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message);
-        closeModal();
-        table.ajax.reload();
-    })
-    .catch(error => {
-        alert('Terjadi kesalahan!');
-        console.error(error);
-    });
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        
+        window.toast.success(data.message || 'Student saved successfully');
+        window.closeModal('studentModal');
+        studentTable.ajax.reload();
+    } catch (error) {
+        window.toast.error('Failed to save student');
+    }
 });
 </script>
 @endpush

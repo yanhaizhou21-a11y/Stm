@@ -3,71 +3,77 @@
 @section('header', 'Categories Management')
 
 @section('content')
-<div class="bg-white rounded-2xl shadow-lg p-6">
-    <div class="flex justify-between items-center mb-6">
-        <h3 class="text-xl font-bold text-gray-800">Data Kategori</h3>
-        <button onclick="openCreateModal()" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 transition shadow-md">
-            + Tambah Kategori
-        </button>
-    </div>
+<x-page-header>
+    <x-slot name="header">Categories Management</x-slot>
+    <x-slot name="description">Manage inventory categories</x-slot>
+    <x-slot name="action">
+        <x-btn variant="primary" onclick="openCreateModal()">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Add Category
+        </x-btn>
+    </x-slot>
 
     <div class="overflow-x-auto">
         <table id="categoriesTable" class="w-full">
             <thead>
-                <tr class="bg-gradient-to-r from-blue-50 to-cyan-50">
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Nama Kategori</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Deskripsi</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
+                <tr>
+                    <th>Category Name</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
         </table>
     </div>
-</div>
+</x-page-header>
 
-<!-- Modal Form -->
-<div id="categoryModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4">
-        <div class="bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-4 rounded-t-2xl">
-            <h3 id="modalTitle" class="text-xl font-bold text-white">Tambah Kategori</h3>
+<x-form-modal modal-id="categoryModal" title="Add Category" size="md">
+    <form id="categoryForm" class="space-y-4">
+        <input type="hidden" id="categoryId">
+        
+        <x-form.input 
+            label="Category Name" 
+            name="nama_kategori" 
+            id="nama_kategori"
+            required 
+            placeholder="Enter category name"
+        />
+
+        <x-form.textarea 
+            label="Description" 
+            name="deskripsi" 
+            id="deskripsi"
+            placeholder="Enter description (optional)"
+            rows="3"
+        />
+
+        <x-form.checkbox 
+            label="Active Status" 
+            name="is_active" 
+            id="is_active"
+            checked
+        />
+
+        <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
+            <x-btn variant="secondary" type="button" onclick="closeModal('categoryModal')">
+                Cancel
+            </x-btn>
+            <x-btn variant="primary" type="submit">
+                Save
+            </x-btn>
         </div>
-        <form id="categoryForm" class="p-6 space-y-4">
-            <input type="hidden" id="categoryId">
-            
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Nama Kategori</label>
-                <input type="text" id="nama_kategori" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
-                <textarea id="deskripsi" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
-            </div>
-
-            <div class="flex items-center">
-                <input type="checkbox" id="is_active" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                <label for="is_active" class="ml-2 text-sm font-medium text-gray-700">Status Aktif</label>
-            </div>
-
-            <div class="flex justify-end space-x-3 pt-4 border-t">
-                <button type="button" onclick="closeModal()" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
-                    Batal
-                </button>
-                <button type="submit" class="px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 transition shadow-md">
-                    Simpan
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+    </form>
+</x-form-modal>
 @endsection
 
 @push('scripts')
 <script>
-let table;
+let categoryTable;
 
 $(document).ready(function() {
-    table = $('#categoriesTable').DataTable({
+    categoryTable = $('#categoriesTable').DataTable({
         processing: true,
         serverSide: true,
         ajax: '{{ route("categories.data") }}',
@@ -81,48 +87,50 @@ $(document).ready(function() {
 });
 
 function openCreateModal() {
-    document.getElementById('modalTitle').innerText = 'Tambah Kategori';
     document.getElementById('categoryForm').reset();
     document.getElementById('categoryId').value = '';
     document.getElementById('is_active').checked = true;
-    document.getElementById('categoryModal').classList.remove('hidden');
+    document.querySelector('#categoryModal h3').textContent = 'Add Category';
+    window.openModal('categoryModal');
 }
 
-function closeModal() {
-    document.getElementById('categoryModal').classList.add('hidden');
-}
+window.editCategory = async function(id) {
+    try {
+        const response = await fetch(`/categories/${id}`);
+        const data = await response.json();
+        
+        document.getElementById('categoryId').value = data.id;
+        document.getElementById('nama_kategori').value = data.nama_kategori;
+        document.getElementById('deskripsi').value = data.deskripsi || '';
+        document.getElementById('is_active').checked = data.is_active;
+        
+        document.querySelector('#categoryModal h3').textContent = 'Edit Category';
+        window.openModal('categoryModal');
+    } catch (error) {
+        window.toast.error('Failed to load category data');
+    }
+};
 
-function editCategory(id) {
-    fetch(`/categories/${id}`)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('modalTitle').innerText = 'Edit Kategori';
-            document.getElementById('categoryId').value = data.id;
-            document.getElementById('nama_kategori').value = data.nama_kategori;
-            document.getElementById('deskripsi').value = data.deskripsi;
-            document.getElementById('is_active').checked = data.is_active;
-            document.getElementById('categoryModal').classList.remove('hidden');
-        });
-}
+window.deleteCategory = async function(id) {
+    if (!confirm('Are you sure you want to delete this category?')) return;
 
-function deleteCategory(id) {
-    if (confirm('Apakah Anda yakin ingin menghapus kategori ini?')) {
-        fetch(`/categories/${id}`, {
+    try {
+        const response = await fetch(`/categories/${id}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 'Content-Type': 'application/json'
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);
-            table.ajax.reload();
         });
+        const data = await response.json();
+        window.toast.success(data.message || 'Category deleted successfully');
+        categoryTable.ajax.reload();
+    } catch (error) {
+        window.toast.error('Failed to delete category');
     }
-}
+};
 
-document.getElementById('categoryForm').addEventListener('submit', function(e) {
+document.getElementById('categoryForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const id = document.getElementById('categoryId').value;
@@ -135,24 +143,23 @@ document.getElementById('categoryForm').addEventListener('submit', function(e) {
         is_active: document.getElementById('is_active').checked ? 1 : 0
     };
     
-    fetch(url, {
-        method: method,
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message);
-        closeModal();
-        table.ajax.reload();
-    })
-    .catch(error => {
-        alert('Terjadi kesalahan!');
-        console.error(error);
-    });
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        
+        window.toast.success(data.message || 'Category saved successfully');
+        window.closeModal('categoryModal');
+        categoryTable.ajax.reload();
+    } catch (error) {
+        window.toast.error('Failed to save category');
+    }
 });
 </script>
 @endpush
