@@ -8,7 +8,7 @@
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
         @php
             $metrics = [
-                ['label' => 'Total Teachers', 'value' => $stats['teachers'], 'description' => 'Active teachers', '  icon' => 'M10 9a3 3 0 100-6 3 3 0 000 6zm-6 9a6 6 0 1112 0'],
+                ['label' => 'Total Teachers', 'value' => $stats['teachers'], 'description' => 'Active teachers', 'icon' => 'M10 9a3 3 0 100-6 3 3 0 000 6zm-6 9a6 6 0 1112 0'],
                 ['label' => 'Total Students', 'value' => $stats['students'], 'description' => 'Active students', 'icon' => 'M6 8a3 3 0 11-6 0 3 3 0 016 0zm8 0a3 3 0 11-6 0 3 3 0 016 0z'],
                 ['label' => 'Inventory Items', 'value' => $stats['inventories'], 'description' => 'Total items', 'icon' => 'M4 6h12l-1 9H5z'],
                 ['label' => 'Categories', 'value' => $stats['categories'], 'description' => 'Item categories', 'icon' => 'M3 5h14v4H3zm0 6h14v4H3z'],
