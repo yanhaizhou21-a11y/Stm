@@ -1,15 +1,20 @@
 @props([
     'label',
     'name',
+    'id' => null,
     'value' => '',
     'required' => false,
     'placeholder' => '',
     'rows' => 3
 ])
 
+@php
+    $id = $id ?? $name;
+@endphp
+
 <div {{ $attributes->merge(['class' => 'space-y-2']) }}>
     @if($label)
-    <label for="{{ $name }}" class="block text-sm font-medium text-slate-700">
+    <label for="{{ $id }}" class="block text-sm font-medium text-slate-700">
         {{ $label }}
         @if($required)
         <span class="text-red-500">*</span>
@@ -18,7 +23,7 @@
     @endif
     
     <textarea
-        id="{{ $name }}"
+        id="{{ $id }}"
         name="{{ $name }}"
         rows="{{ $rows }}"
         placeholder="{{ $placeholder }}"

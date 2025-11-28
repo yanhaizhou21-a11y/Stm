@@ -27,6 +27,8 @@ School Management System adalah aplikasi manajemen sekolah modern yang dibangun 
 - 👨‍🎓 **Student Management** - Manajemen data siswa
 - 📁 **Category Management** - Kategori untuk inventaris
 - 📦 **Inventory Management** - Manajemen aset sekolah dengan relasi
+- 🔄 **Borrowing System** - Sistem peminjaman dengan validasi ID
+- ↩️ **Return System** - Pengembalian barang dengan update status otomatis
 - 🎨 **Modern UI/UX** - Ocean Blue Theme dengan animasi smooth
 - 📱 **Responsive Design** - Mobile-friendly interface
 - ⚡ **Fast & Efficient** - Yajra Datatables dengan server-side processing
@@ -188,6 +190,32 @@ php artisan serve
 - Status
 - Lokasi Barang
 - Status Aktif
+
+### 7. Peminjaman (Borrowing)
+- ✅ Borrowing records for Students and Teachers
+- ✅ NISN/NIP Validation with AJAX
+- ✅ Item Code Validation with AJAX
+- ✅ Automatic status tracking
+- ✅ Double borrowing prevention
+
+**Fields:**
+- Peminjam (Siswa/Guru)
+- Barang
+- Tanggal Pinjam
+- Tanggal Kembali (Rencana)
+- Keterangan
+- Status (Dipinjam/Dikembalikan)
+
+### 8. Pengembalian (Returning)
+- ✅ Streamlined return process via Modal
+- ✅ Automatic Inventory Status update (Baik/Rusak)
+- ✅ Overdue calculation
+- ✅ Return condition tracking
+
+**Fields:**
+- Tanggal Dikembalikan
+- Status Barang (Baik/Rusak/Hilang)
+- Catatan
 
 ---
 

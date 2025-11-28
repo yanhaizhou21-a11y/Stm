@@ -20,7 +20,7 @@
         }
         
         .ocean-pattern {
-            background: linear-gradient(135deg, #0077B6 0%, #00B4D8 50%, #90E0EF 100%);
+            background: linear-gradient(135deg, #4338ca 0%, #4f46e5 50%, #818cf8 100%);
             position: relative;
             overflow: hidden;
         }

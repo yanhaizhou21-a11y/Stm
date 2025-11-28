@@ -150,7 +150,13 @@ function openCreateModal() {
 
 window.editStudent = async function(id) {
     try {
-        const response = await fetch(`/students/${id}`);
+        const response = await fetch(`/students/${id}`, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        if (!response.ok) throw new Error('Failed to load student data');
+        
         const data = await response.json();
         
         document.getElementById('studentId').value = data.id;
@@ -166,7 +172,7 @@ window.editStudent = async function(id) {
         document.querySelector('#studentModal h3').textContent = 'Edit Student';
         window.openModal('studentModal');
     } catch (error) {
-        window.toast.error('Failed to load student data');
+        window.toast.error(error.message);
     }
 };
 
@@ -178,14 +184,19 @@ window.deleteStudent = async function(id) {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             }
         });
+        
         const data = await response.json();
+        
+        if (!response.ok) throw new Error(data.message || 'Failed to delete student');
+        
         window.toast.success(data.message || 'Student deleted successfully');
         studentTable.ajax.reload();
     } catch (error) {
-        window.toast.error('Failed to delete student');
+        window.toast.error(error.message);
     }
 };
 
@@ -212,17 +223,32 @@ document.getElementById('studentForm').addEventListener('submit', async function
             method: method,
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify(formData)
         });
+        
         const data = await response.json();
+        
+        if (!response.ok) {
+            if (response.status === 422) {
+                // Handle validation errors
+                let errorMessage = data.message || 'Validation failed';
+                if (data.errors) {
+                    const errors = Object.values(data.errors).flat();
+                    errorMessage += ':\n' + errors.join('\n');
+                }
+                throw new Error(errorMessage);
+            }
+            throw new Error(data.message || 'Failed to save student');
+        }
         
         window.toast.success(data.message || 'Student saved successfully');
         window.closeModal('studentModal');
         studentTable.ajax.reload();
     } catch (error) {
-        window.toast.error('Failed to save student');
+        window.toast.error(error.message);
     }
 });
 </script>

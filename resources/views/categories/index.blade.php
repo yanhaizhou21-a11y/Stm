@@ -96,7 +96,13 @@ function openCreateModal() {
 
 window.editCategory = async function(id) {
     try {
-        const response = await fetch(`/categories/${id}`);
+        const response = await fetch(`/categories/${id}`, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        if (!response.ok) throw new Error('Failed to load category data');
+        
         const data = await response.json();
         
         document.getElementById('categoryId').value = data.id;
@@ -107,7 +113,7 @@ window.editCategory = async function(id) {
         document.querySelector('#categoryModal h3').textContent = 'Edit Category';
         window.openModal('categoryModal');
     } catch (error) {
-        window.toast.error('Failed to load category data');
+        window.toast.error(error.message);
     }
 };
 
@@ -119,14 +125,19 @@ window.deleteCategory = async function(id) {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             }
         });
+        
         const data = await response.json();
+        
+        if (!response.ok) throw new Error(data.message || 'Failed to delete category');
+        
         window.toast.success(data.message || 'Category deleted successfully');
         categoryTable.ajax.reload();
     } catch (error) {
-        window.toast.error('Failed to delete category');
+        window.toast.error(error.message);
     }
 };
 
@@ -148,17 +159,31 @@ document.getElementById('categoryForm').addEventListener('submit', async functio
             method: method,
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify(formData)
         });
+        
         const data = await response.json();
+        
+        if (!response.ok) {
+            if (response.status === 422) {
+                let errorMessage = data.message || 'Validation failed';
+                if (data.errors) {
+                    const errors = Object.values(data.errors).flat();
+                    errorMessage += ':\n' + errors.join('\n');
+                }
+                throw new Error(errorMessage);
+            }
+            throw new Error(data.message || 'Failed to save category');
+        }
         
         window.toast.success(data.message || 'Category saved successfully');
         window.closeModal('categoryModal');
         categoryTable.ajax.reload();
     } catch (error) {
-        window.toast.error('Failed to save category');
+        window.toast.error(error.message);
     }
 });
 </script>

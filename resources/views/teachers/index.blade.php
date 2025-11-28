@@ -142,7 +142,13 @@ function openCreateModal() {
 
 window.editTeacher = async function(id) {
     try {
-        const response = await fetch(`/teachers/${id}`);
+        const response = await fetch(`/teachers/${id}`, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        if (!response.ok) throw new Error('Failed to load teacher data');
+        
         const data = await response.json();
         
         document.getElementById('teacherId').value = data.id;
@@ -157,7 +163,7 @@ window.editTeacher = async function(id) {
         document.querySelector('#teacherModal h3').textContent = 'Edit Teacher';
         window.openModal('teacherModal');
     } catch (error) {
-        window.toast.error('Failed to load teacher data');
+        window.toast.error(error.message);
     }
 };
 
@@ -169,14 +175,19 @@ window.deleteTeacher = async function(id) {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             }
         });
+        
         const data = await response.json();
+        
+        if (!response.ok) throw new Error(data.message || 'Failed to delete teacher');
+        
         window.toast.success(data.message || 'Teacher deleted successfully');
         teacherTable.ajax.reload();
     } catch (error) {
-        window.toast.error('Failed to delete teacher');
+        window.toast.error(error.message);
     }
 };
 
@@ -202,17 +213,31 @@ document.getElementById('teacherForm').addEventListener('submit', async function
             method: method,
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify(formData)
         });
+        
         const data = await response.json();
+        
+        if (!response.ok) {
+            if (response.status === 422) {
+                let errorMessage = data.message || 'Validation failed';
+                if (data.errors) {
+                    const errors = Object.values(data.errors).flat();
+                    errorMessage += ':\n' + errors.join('\n');
+                }
+                throw new Error(errorMessage);
+            }
+            throw new Error(data.message || 'Failed to save teacher');
+        }
         
         window.toast.success(data.message || 'Teacher saved successfully');
         window.closeModal('teacherModal');
         teacherTable.ajax.reload();
     } catch (error) {
-        window.toast.error('Failed to save teacher');
+        window.toast.error(error.message);
     }
 });
 </script>

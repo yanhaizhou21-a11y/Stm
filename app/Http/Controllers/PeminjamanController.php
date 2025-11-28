@@ -19,10 +19,6 @@ class PeminjamanController extends Controller
 {
     public function index(): View
     {
-        $peminjaman = Peminjaman::with(['barang', 'peminjam'])
-            ->latest('tanggal_pinjam')
-            ->get();
-
         $inventories = Inventory::select('id', 'nama_barang')
             ->orderBy('nama_barang')
             ->get();
@@ -35,7 +31,7 @@ class PeminjamanController extends Controller
             ->orderBy('nama_lengkap')
             ->get();
 
-        return view('peminjaman.index', compact('peminjaman', 'inventories', 'students', 'teachers'));
+        return view('peminjaman.index', compact('inventories', 'students', 'teachers'));
     }
 
     public function data(): JsonResponse
@@ -45,16 +41,19 @@ class PeminjamanController extends Controller
 
         return DataTables::of($query)
             ->addColumn('peminjam', function (Peminjaman $row) {
-                return $row->role_label;
-            })
-            ->addColumn('nama', function (Peminjaman $row) {
                 return $row->peminjam_nama ?? '-';
+            })
+            ->addColumn('role', function (Peminjaman $row) {
+                return ucfirst($row->role_label);
             })
             ->addColumn('barang', function (Peminjaman $row) {
                 return $row->barang?->nama_barang ?? '-';
             })
-            ->addColumn('id_barang', function (Peminjaman $row) {
-                return $row->barang_id ?? '-';
+            ->addColumn('tanggal_pinjam', function (Peminjaman $row) {
+                return optional($row->tanggal_pinjam)?->format('d M Y') ?? '-';
+            })
+            ->addColumn('tanggal_kembali', function (Peminjaman $row) {
+                return optional($row->tanggal_kembali)?->format('d M Y') ?? '-';
             })
             ->addColumn('status', function (Peminjaman $row) {
                 $colors = [
@@ -66,28 +65,9 @@ class PeminjamanController extends Controller
                 $color = $colors[$row->status] ?? 'bg-gray-100 text-gray-800';
                 return '<span class="px-2 py-1 text-xs rounded-full ' . $color . '">' . ucfirst($row->status) . '</span>';
             })
-            ->editColumn('tanggal_pinjam', function (Peminjaman $row) {
-                return optional($row->tanggal_pinjam)?->format('d M Y') ?? '-';
-            })
-            ->editColumn('tanggal_kembali', function (Peminjaman $row) {
-                return optional($row->tanggal_kembali)?->format('d M Y') ?? '-';
-            })
-            ->addColumn('keterangan', function (Peminjaman $row) {
-                return $row->keterangan ?? '-';
-            })
             ->addColumn('action', function (Peminjaman $row) {
-                $editBtn = '<button type="button" class="px-3 py-1.5 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition" data-edit-button data-id="' . $row->id . '">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                    </svg>
-                    Edit
-                </button>';
-                $deleteBtn = '<button type="button" onclick="deletePeminjaman(' . $row->id . ')" class="px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition ml-2">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                    Hapus
-                </button>';
+                $editBtn = '<button onclick="editPeminjaman(' . $row->id . ')" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>';
+                $deleteBtn = '<button onclick="deletePeminjaman(' . $row->id . ')" class="text-red-600 hover:text-red-900">Delete</button>';
                 return $editBtn . $deleteBtn;
             })
             ->rawColumns(['action', 'status'])
@@ -129,6 +109,19 @@ class PeminjamanController extends Controller
     public function store(StorePeminjamanRequest $request)
     {
         $attributes = $this->mapRequestToAttributes($request->validated());
+        
+        // Check if item is already borrowed
+        $isBorrowed = Peminjaman::where('barang_id', $attributes['barang_id'])
+            ->where('status', 'dipinjam')
+            ->exists();
+
+        if ($isBorrowed) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Barang sedang dipinjam.'], 422);
+            }
+            return back()->withErrors(['barang_id' => 'Barang sedang dipinjam.']);
+        }
+
         $attributes['added_by'] = (string) Auth::id();
         $attributes['status'] = 'dipinjam';
 

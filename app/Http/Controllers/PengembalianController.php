@@ -27,7 +27,7 @@ class PengembalianController extends Controller
         return view('pengembalian.create', compact('peminjaman'));
     }
 
-    public function store(StorePengembalianRequest $request): RedirectResponse
+    public function store(StorePengembalianRequest $request)
     {
         $validated = $request->validated();
         $validated['checked_by'] = (string) Auth::id();
@@ -42,6 +42,20 @@ class PengembalianController extends Controller
         // Update status peminjaman
         $peminjaman = Peminjaman::findOrFail($validated['peminjaman_id']);
         $peminjaman->update(['status' => $validated['status_barang']]);
+
+        // Update Inventory status
+        $inventory = $peminjaman->barang;
+        if ($inventory) {
+            if ($validated['status_barang'] === 'rusak') {
+                $inventory->update(['status' => 'Rusak']);
+            } elseif ($validated['status_barang'] === 'dikembalikan') {
+                $inventory->update(['status' => 'Baik']);
+            }
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Pengembalian berhasil disimpan.']);
+        }
 
         return redirect()->route('pengembalian.index')
             ->with('success', 'Pengembalian berhasil disimpan.');
@@ -74,6 +88,16 @@ class PengembalianController extends Controller
         // Update status peminjaman
         $peminjaman = Peminjaman::findOrFail($validated['peminjaman_id']);
         $peminjaman->update(['status' => $validated['status_barang']]);
+
+        // Update Inventory status
+        $inventory = $peminjaman->barang;
+        if ($inventory) {
+            if ($validated['status_barang'] === 'rusak') {
+                $inventory->update(['status' => 'Rusak']);
+            } elseif ($validated['status_barang'] === 'dikembalikan') {
+                $inventory->update(['status' => 'Baik']);
+            }
+        }
 
         return redirect()->route('pengembalian.index')
             ->with('success', 'Pengembalian berhasil diperbarui.');

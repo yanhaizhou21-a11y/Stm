@@ -156,7 +156,13 @@ function openCreateModal() {
 
 window.editInventory = async function(id) {
     try {
-        const response = await fetch(`/inventories/${id}`);
+        const response = await fetch(`/inventories/${id}`, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        if (!response.ok) throw new Error('Failed to load inventory data');
+        
         const data = await response.json();
         
         document.getElementById('inventoryId').value = data.id;
@@ -171,7 +177,7 @@ window.editInventory = async function(id) {
         document.querySelector('#inventoryModal h3').textContent = 'Edit Inventory Item';
         window.openModal('inventoryModal');
     } catch (error) {
-        window.toast.error('Failed to load inventory data');
+        window.toast.error(error.message);
     }
 };
 
@@ -183,14 +189,19 @@ window.deleteInventory = async function(id) {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             }
         });
+        
         const data = await response.json();
+        
+        if (!response.ok) throw new Error(data.message || 'Failed to delete item');
+        
         window.toast.success(data.message || 'Item deleted successfully');
         inventoryTable.ajax.reload();
     } catch (error) {
-        window.toast.error('Failed to delete item');
+        window.toast.error(error.message);
     }
 };
 
@@ -216,17 +227,31 @@ document.getElementById('inventoryForm').addEventListener('submit', async functi
             method: method,
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify(formData)
         });
+        
         const data = await response.json();
+        
+        if (!response.ok) {
+            if (response.status === 422) {
+                let errorMessage = data.message || 'Validation failed';
+                if (data.errors) {
+                    const errors = Object.values(data.errors).flat();
+                    errorMessage += ':\n' + errors.join('\n');
+                }
+                throw new Error(errorMessage);
+            }
+            throw new Error(data.message || 'Failed to save item');
+        }
         
         window.toast.success(data.message || 'Item saved successfully');
         window.closeModal('inventoryModal');
         inventoryTable.ajax.reload();
     } catch (error) {
-        window.toast.error('Failed to save item');
+        window.toast.error(error.message);
     }
 });
 </script>
